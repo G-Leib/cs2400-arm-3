@@ -44,15 +44,16 @@ main
 				BL		check_msb
 				MOV		r0, r6
 				ADD		r1, r3, r4		;add exponents
+				SUB		r1, r1, #127
 				MOV		r5, #1
 				LSL		r5, r5, #7
 				MOV		r6, r1
 				BL		check_msb
 				MOV		r1, r6
 				LSL		r1, r1, #23
-				ORR		r0, r0, r1
 				CMP		r8, #1
-				RSBeq	r1, r0, #0
+				BLeq		negater
+				ORR		r1, r0, r1
 				ADR		r0, result
 				STR		r1, [r0]
 				END
@@ -82,3 +83,9 @@ check_msb
 				MOVlt	pc, lr
 				LSR		r6, r6, #1
 				B		check_msb
+negater
+				RSB		r0, r0, #0			;negate fraction
+				MOV		r5, #255				;create 8bit mask
+				LSL		r5, r5, #23			;move mask to exponent bits
+				EOR		r0, r0, r5			;remove exponent bits
+				MOV		pc, lr
